@@ -1,5 +1,6 @@
 package GUI;
 
+import BackEnd.Player;
 import BackEnd.ResultTable;
 
 import Window.*;
@@ -14,7 +15,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MenuGUI extends JFrame implements ActionListener {
@@ -66,6 +68,7 @@ public class MenuGUI extends JFrame implements ActionListener {
         nameSaveButton.setForeground(Color.cyan);
         nameSaveButton.setBackground(Color.lightGray);
         nameSaveButton.setBorder(BorderFactory.createEtchedBorder());
+        nameSaveButton.addActionListener(this);
 
 
 
@@ -147,10 +150,22 @@ public class MenuGUI extends JFrame implements ActionListener {
         //menuFrame.pack();
 
     }
-
+    ResultWindow resultWindow;
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()==nameSaveButton) {
+            try {
+                List<Player> players = ResultWindow.loadList();
+                Player p = new Player(nameText.getText());
+                p.setEasyLevel("0");
+                p.setMediumLevel("0");
+                p.setHardLevel("0");
+                players.add(p);
+                ResultWindow.saveList(players);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
 
 
         }
@@ -168,7 +183,7 @@ public class MenuGUI extends JFrame implements ActionListener {
         else if (e.getSource()==resultButton){
             this.dispose();
             try {
-                ResultWindow resultWindow = new ResultWindow();
+                resultWindow = new ResultWindow();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

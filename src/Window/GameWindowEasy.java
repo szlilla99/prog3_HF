@@ -1,14 +1,20 @@
 package Window;
 
+import BackEnd.GameFile;
+import BackEnd.GameState;
 import GUI.MenuGUI;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class GameWindowEasy<balls> implements ActionListener {
     JFrame frame = new JFrame("Game field - Easy");
+
+    int width = 8;
+    int height = 4;
 
     JPanel[] ballPanels = new JPanel[8];
 
@@ -16,19 +22,22 @@ public class GameWindowEasy<balls> implements ActionListener {
     JPanel greenPanel;
 
     JButton retakeButton = new JButton("Retake");
-    JButton backButton = new JButton("Back");
+    //JButton backButton = new JButton("Back");
     JButton addStorageButton = new JButton("Add");
 
-    JButton[][] balls = new JButton[8][4];
+    JButton[][] balls = new JButton[width][height];
 
     JButton exitButton;
+    Color buttonColor = Color.lightGray;
+
+    boolean first = true;
 
     public GameWindowEasy(){
 
         retakeButton.setPreferredSize(new Dimension(100,100));
         retakeButton.addActionListener(this::actionPerformed);
 
-        backButton.setPreferredSize(new Dimension(100,100));
+        //backButton.setPreferredSize(new Dimension(100,100));
 
 
         addStorageButton.setPreferredSize(new Dimension(100,100));
@@ -63,50 +72,83 @@ public class GameWindowEasy<balls> implements ActionListener {
         frame.setResizable(false);
         frame.setLayout(null);
 
-        for (int i= 0; i<8; i++){
+        for (int i= 0; i<width; i++){
             ballPanels[i] = new JPanel();
         }
 
         for(int i = 0; i < 8; i++){
             for(int j = 0; j<4; j++){
+                balls[i][j] = new JButton();
+                balls[i][j].addActionListener(this::Coloring);
                 if(i == 0){
-                    balls[i][j] = new JButton();
                     ballPanels[i].add(balls[i][j]);
+                    if(j>0){
+                        balls[i][j].setEnabled(false);
+                    }
                 }
                 else if(i == 1){
-                    balls[i][j] = new JButton();
                     ballPanels[i].add(balls[i][j]);
+                    if(j>0){
+                        balls[i][j].setEnabled(false);
+                    }
                 }
                 else if(i == 2){
-                    balls[i][j] = new JButton();
                     ballPanels[i].add(balls[i][j]);
+                    if(j>0){
+                        balls[i][j].setEnabled(false);
+                    }
                 }
                 else if(i == 3){
-                    balls[i][j] = new JButton();
                     ballPanels[i].add(balls[i][j]);
+                    if(j>0){
+                        balls[i][j].setEnabled(false);
+                    }
                 }
                 else if(i == 4){
-                    balls[i][j] = new JButton();
                     ballPanels[i].add(balls[i][j]);
+                    if(j>0){
+                        balls[i][j].setEnabled(false);
+                    }
                 }
                 else if(i == 5){
-                    balls[i][j] = new JButton();
+                    balls[i][j].setBackground(Color.white);
                     ballPanels[i].add(balls[i][j]);
+                    if(j != 3){
+                        balls[i][j].setEnabled(false);
+                    }
                 }
                 else if(i == 6){
-                    balls[i][j] = new JButton();
+                    balls[i][j].setBackground(Color.white);
                     ballPanels[i].add(balls[i][j]);
+                    if(j != 3){
+                        balls[i][j].setEnabled(false);
+                    }
                 }
                 else if(i == 7){
-                    balls[i][j] = new JButton();
+                    balls[i][j].setBackground(Color.white);
                     ballPanels[i].add(balls[i][j]);
+                    if(j != 3){
+                        balls[i][j].setEnabled(false);
+                    }
                     ballPanels[i].setVisible(false);
                 }
 
 
             }
         }
-
+        try {
+            Color[][] colors = GameFile.loadField().get(3).getColors();
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 4; j++) {
+                    balls[i][j].setBackground(colors[i][j]);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+/*
         balls[0][0].setBackground(Color.blue);
         balls[0][1].setBackground(Color.cyan);
         balls[0][2].setBackground(Color.orange);
@@ -132,9 +174,15 @@ public class GameWindowEasy<balls> implements ActionListener {
         balls[4][2].setBackground(Color.cyan);
         balls[4][3].setBackground(Color.blue);
 
+        try {
+            GameFile.saveField(new GameState(5, 4, balls));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+
 
         bluePanel.add(retakeButton);
-        bluePanel.add(backButton);
+        //bluePanel.add(backButton);
         bluePanel.add(addStorageButton);
         greenPanel.add(exitButton);
 
@@ -158,6 +206,59 @@ public class GameWindowEasy<balls> implements ActionListener {
 
     }
 
+
+    public void enablePut(JButton[][] balls){
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 4; j++){
+                balls[i][j].setEnabled(false);
+                if(balls[i][j].getBackground() == Color.white
+                        && (j==3 || balls[i][j+1].getBackground() == buttonColor)){
+                    balls[i][j].setEnabled(true);
+                }
+            }
+        }
+    }
+
+    public void enablePick(JButton[][] balls){
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j<4; j++){
+                balls[i][j].setEnabled(false);
+            }
+            for(int j = 0; j<4; j++) {
+                if (balls[i][j].getBackground() != Color.white) {
+                    balls[i][j].setEnabled(true);
+                    break;
+                }
+
+            }
+        }
+    }
+
+
+
+    public void Coloring(ActionEvent actionEvent) {
+        JButton jb = (JButton) actionEvent.getSource();
+        if ((jb.getBackground() == Color.white) == first) return;
+
+        if (first) {
+            buttonColor = jb.getBackground();
+            jb.setBackground(Color.white);
+            first = false;
+
+            enablePut(balls);
+            return;
+
+        } else{
+            jb.setBackground(buttonColor);
+            first = true;
+            enablePick(balls);
+            return;
+
+        }
+    }
+
+
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()==exitButton)
@@ -167,10 +268,10 @@ public class GameWindowEasy<balls> implements ActionListener {
         }
         else if(e.getSource() == addStorageButton){
             ballPanels[7].setVisible(true);
-        }
+        }/*
         else if (e.getSource() == backButton){
 
-        }
+        }*/
         else if(e.getSource() == retakeButton){
             frame.dispose();
             GameWindowEasy gameWindowEasy = new GameWindowEasy();

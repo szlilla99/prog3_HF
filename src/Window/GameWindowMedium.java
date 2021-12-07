@@ -1,32 +1,45 @@
 package Window;
 
+import BackEnd.GameFile;
+import BackEnd.GameState;
 import GUI.MenuGUI;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class GameWindowMedium<balls> implements ActionListener {
     JFrame frame = new JFrame("Game field - Medium");
+
+    int width = 10;
+    int height = 4;
 
     JPanel[] ballPanels = new JPanel[10];
 
     JPanel bluePanel;
     JPanel greenPanel;
 
+    //ArrayList<JButton> historyOfButtons = new ArrayList<>();
+    //ArrayList<Color> historyOfPickedUp = new ArrayList<>();
+
     boolean first = true;
 
     JButton retakeButton = new JButton("Retake");
-    JButton backButton = new JButton("Back");
+    //JButton backButton = new JButton("Back");
     JButton addStorageButton = new JButton("Add");
 
-    JButton[][] balls = new JButton[10][4];
+    JButton[][] balls = new JButton[width][height];
 
     JButton exitButton;
 
     Color buttonColor = Color.lightGray;
 
+    /**
+     *
+     */
     public GameWindowMedium(){
         //ImageIcon retakeIcon = new ImageIcon("reverse.png");
         //ImageIcon backIcon = new ImageIcon("back2.jpg");
@@ -37,7 +50,7 @@ public class GameWindowMedium<balls> implements ActionListener {
         retakeButton.addActionListener(this::actionPerformed);
 
         //backButton.setIcon(backIcon);
-        backButton.setPreferredSize(new Dimension(100,100));
+        //backButton.setPreferredSize(new Dimension(100,100));
 
         //addstorageButton.setIcon(pluszIcon);
         addStorageButton.setPreferredSize(new Dimension(100,100));
@@ -72,70 +85,97 @@ public class GameWindowMedium<balls> implements ActionListener {
         frame.setResizable(false);
         frame.setLayout(null);
 
-        for (int i= 0; i<10; i++){
+        for (int i= 0; i<width; i++){
             ballPanels[i] = new JPanel();
         }
 
-        for(int i = 0; i < 10; i++){
-            for(int j = 0; j<4; j++){
+        for(int i = 0; i < width; i++){
+            for(int j = 0; j<height; j++){
+                balls[i][j] = new JButton();
+                balls[i][j].addActionListener(this::Coloring);
                 if(i == 0){
-                    balls[i][j] = new JButton();
-                    balls[i][j].addActionListener(this::Coloring);
                     ballPanels[i].add(balls[i][j]);
+                    if(j>0){
+                        balls[i][j].setEnabled(false);
+                    }
                 }
                 else if(i == 1){
-                    balls[i][j] = new JButton();
-                    balls[i][j].addActionListener(this::Coloring);
                     ballPanels[i].add(balls[i][j]);
+                    if(j>0){
+                        balls[i][j].setEnabled(false);
+                    }
                 }
                 else if(i == 2){
-                    balls[i][j] = new JButton();
-                    balls[i][j].addActionListener(this::Coloring);
                     ballPanels[i].add(balls[i][j]);
+                    if(j>0){
+                        balls[i][j].setEnabled(false);
+                    }
                 }
                 else if(i == 3){
-                    balls[i][j] = new JButton();
-                    balls[i][j].addActionListener(this::Coloring);
                     ballPanels[i].add(balls[i][j]);
+                    if(j>0){
+                        balls[i][j].setEnabled(false);
+                    }
                 }
                 else if(i == 4){
-                    balls[i][j] = new JButton();
-                    balls[i][j].addActionListener(this::Coloring);
                     ballPanels[i].add(balls[i][j]);
+                    if(j>0){
+                        balls[i][j].setEnabled(false);
+                    }
                 }
                 else if(i == 5){
-                    balls[i][j] = new JButton();
-                    balls[i][j].addActionListener(this::Coloring);
                     ballPanels[i].add(balls[i][j]);
+                    if(j>0){
+                        balls[i][j].setEnabled(false);
+                    }
                 }
                 else if(i == 6){
-                    balls[i][j] = new JButton();
-                    balls[i][j].addActionListener(this::Coloring);
                     ballPanels[i].add(balls[i][j]);
+                    if(j>0){
+                        balls[i][j].setEnabled(false);
+                    }
                 }
                 else if(i == 7){
-                    balls[i][j] = new JButton();
-                    balls[i][j].addActionListener(this::Coloring);
                     balls[i][j].setBackground(Color.white);
                     ballPanels[i].add(balls[i][j]);
+                    if(j != 3){
+                        balls[i][j].setEnabled(false);
+                    }
                 }
                 else if(i == 8){
-                    balls[i][j] = new JButton();
-                    balls[i][j].addActionListener(this::Coloring);
                     balls[i][j].setBackground(Color.white);
                     ballPanels[i].add(balls[i][j]);
+                    if(j != 3){
+                        balls[i][j].setEnabled(false);
+                    }
                 }
                 else if(i == 9){
-                    balls[i][j] = new JButton();
-                    balls[i][j].addActionListener(this::Coloring);
                     balls[i][j].setBackground(Color.white);
                     ballPanels[i].add(balls[i][j]);
+                    if(j != 3){
+                        balls[i][j].setEnabled(false);
+                    }
                     ballPanels[i].setVisible(false);
                 }
 
 
             }
         }
+
+
+        try {
+            Color[][] colors = GameFile.loadField().get(0).getColors();
+            for (int i = 0; i < 7; i++) {
+                for (int j = 0; j < height; j++) {
+                    balls[i][j].setBackground(colors[i][j]);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+/*
         balls[0][0].setBackground(Color.red);
         balls[0][1].setBackground(Color.pink);
         balls[0][2].setBackground(Color.pink);
@@ -171,12 +211,19 @@ public class GameWindowMedium<balls> implements ActionListener {
         balls[6][2].setBackground(Color.blue);
         balls[6][3].setBackground(Color.pink);
 
+        try {
+            GameFile.saveField(new GameState(7, 4, balls));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+
+
         bluePanel.add(retakeButton);
-        bluePanel.add(backButton);
+        //bluePanel.add(backButton);
         bluePanel.add(addStorageButton);
         greenPanel.add(exitButton);
 
-        for (int i= 0; i<10; i++){
+        for (int i= 0; i<width; i++){
             ballPanels[0].setBounds(25, 200, 50, 200);
             ballPanels[1].setBounds(125, 200, 50, 200);
             ballPanels[2].setBounds(225, 200, 50, 200);
@@ -195,34 +242,62 @@ public class GameWindowMedium<balls> implements ActionListener {
         frame.add(greenPanel);
         frame.setVisible(true);
 
-
-
-
     }
 
-    public void Coloring(ActionEvent actionEvent) {
-        for(int i = 0; i < 10; i++) {
-            for (int j = 0; j < 4; j++) {
-                if(actionEvent.getSource() == balls[i][j]){
-                    if(first){
-                        if(balls[i][j].getBackground() != Color.white && buttonColor != Color.white){
-                            buttonColor = balls[i][j].getBackground();
-                            balls[i][j].setBackground(Color.white);
-                            first = false;
-                            return;
-                        }
 
-                    }
-                    else if(!first){
-                        if(balls[i][j].getBackground() == Color.white && buttonColor != Color.white){
-                            balls[i][j].setBackground(buttonColor);
-                            first = true;
-                            return;
-                        }
-
-                    }
+    /**
+     * Mit csinál (röviden)
+     *
+     *
+     * @param balls
+     */
+    public void enablePut(JButton[][] balls){
+        for(int i = 0; i < width; i++){
+            for(int j = 0; j < height; j++){
+                balls[i][j].setEnabled(false);
+                if(balls[i][j].getBackground() == Color.white
+                        && (j==3 || balls[i][j+1].getBackground() == buttonColor)){
+                    balls[i][j].setEnabled(true);
                 }
             }
+        }
+    }
+
+    public void enablePick(JButton[][] balls){
+        for(int i = 0; i < width; i++){
+            for(int j = 0; j<height; j++){
+                balls[i][j].setEnabled(false);
+            }
+            for(int j = 0; j < 4; j++) {
+                if ((j == 0 && balls[i][j].getBackground() != Color.white)
+                        || balls[i][j].getBackground() != Color.white) {
+                    balls[i][j].setEnabled(true);
+                    break;
+                }
+
+            }
+        }
+    }
+
+
+
+    public void Coloring(ActionEvent actionEvent) {
+        JButton jb = (JButton) actionEvent.getSource();
+        if ((jb.getBackground() == Color.white) == first) return;
+
+        if (first) {
+            buttonColor = jb.getBackground();
+            jb.setBackground(Color.white);
+            first = false;
+            enablePut(balls);
+            return;
+
+        } else{
+            jb.setBackground(buttonColor);
+            first = true;
+            enablePick(balls);
+            return;
+
         }
     }
 
@@ -236,11 +311,12 @@ public class GameWindowMedium<balls> implements ActionListener {
             MenuGUI menuGUI = new MenuGUI();
         }
         else if(e.getSource() == addStorageButton){
-            ballPanels[9].setVisible(true);
-        }
+            ballPanels[width-1].setVisible(true);
+            addStorageButton.setEnabled(false);
+        }/*
         else if (e.getSource() == backButton){
 
-        }
+        }*/
         else if(e.getSource() == retakeButton) {
             frame.dispose();
             GameWindowMedium gameWindowMedium = new GameWindowMedium();
@@ -249,11 +325,6 @@ public class GameWindowMedium<balls> implements ActionListener {
 
 
     }
-
-
-
-
-
 
 }
 
